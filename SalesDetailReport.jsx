@@ -3,7 +3,7 @@ import { Bar, Line, Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 import Papa from 'papaparse';
 import { Chart as ChartJS } from 'chart.js/auto';
-import { salesData, getSalesData, getDataSummary } from './src/data/salesData.js';
+import { salesData, getSalesData, getDataSummary } from './salesDataEmbedded';
 
 // Utilidades para filtrar y agrupar datos
 const getUnique = (data, key) => [...new Set(data.map(item => item[key]))];
