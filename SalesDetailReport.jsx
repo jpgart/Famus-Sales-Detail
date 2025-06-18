@@ -1,8 +1,9 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Bar, Line, Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 import Papa from 'papaparse';
 import { Chart as ChartJS } from 'chart.js/auto';
+import { salesData, getSalesData, getDataSummary } from './src/data/salesData.js';
 
 // Utilidades para filtrar y agrupar datos
 const getUnique = (data, key) => [...new Set(data.map(item => item[key]))];
@@ -1333,11 +1334,18 @@ const CombinedKPIChart = ({ data, exporterFilter }) => {
 };
 
 const SalesDetailReport = () => {
-  const [salesData, setSalesData] = useState([]);
+  const [salesData, setSalesData] = useState(getSalesData()); // Cargar datos automáticamente
   const [exporter, setExporter] = useState('All');
   const [retailer, setRetailer] = useState('All');
   const [variety, setVariety] = useState('All');
   const [size, setSize] = useState('All');
+
+  // Cargar datos automáticamente al inicializar
+  useEffect(() => {
+    const loadedData = getSalesData();
+    setSalesData(loadedData);
+    console.log('📊 Datos cargados automáticamente:', getDataSummary());
+  }, []);
 
   // Refs para navegación - nuevo orden
   const refs = {
@@ -1358,17 +1366,7 @@ const SalesDetailReport = () => {
   };
 
   // Carga de archivo CSV
-  const handleFile = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: results => setSalesData(results.data),
-    });
-  };
-
-  // Filtros disponibles
+  // Filtros disponibles (datos ya cargados automáticamente)
   const exporters = useMemo(() => ['All', ...getUnique(salesData, 'Exporter Clean')], [salesData]);
   const retailers = useMemo(() => ['All', ...getUnique(salesData, 'Retailer Name')], [salesData]);
   const varieties = useMemo(() => ['All', ...getUnique(salesData, 'Variety')], [salesData]);
@@ -1389,10 +1387,13 @@ const SalesDetailReport = () => {
     <div className="min-h-screen bg-[#F9F6F4] w-full m-0 p-0">
       <div className="p-6 space-y-16 w-full max-w-none m-0">
         <h1 className="text-4xl font-extrabold text-center mb-8 text-[#EE6C4D]">Sales Detail Report</h1>
-        <div className="mb-6">
-          <label className="block mb-2 font-semibold text-lg text-[#3D5A80]">Upload Sales_Detail_By_Lotid.csv</label>
-          <input type="file" accept=".csv" onChange={handleFile} className="border p-2 rounded border-[#98C1D9] bg-white" />
-        </div>
+        
+        {/* Datos cargados automáticamente - 7,329 registros */}
+        {salesData.length > 0 && (
+          <div className="bg-[#98C1D9] text-white p-3 rounded-lg text-center">
+            ✅ Datos cargados automáticamente: {salesData.length.toLocaleString()} registros
+          </div>
+        )}
         
         {/* 1. Indices */}
         <SectionIndex refs={refs} />

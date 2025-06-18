@@ -3,3 +3,9 @@ dist/
 .DS_Store
 *.log
 .cache/
+
+# Archivos de desarrollo que no deben subirse
+convertCsvToData.js
+
+# Archivos CSV originales (datos ya embebidos)
+*.csv
